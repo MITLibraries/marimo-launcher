@@ -34,7 +34,7 @@ update: # Update Python dependencies
 ######################
 
 test: # Run tests and print a coverage report
-	uv run coverage run --source=my_app -m pytest -vv
+	uv run coverage run --source=launcher -m pytest -vv
 	uv run coverage report -m
 
 coveralls: test # Write coverage data to an LCOV report
@@ -65,3 +65,12 @@ black-apply: # Apply changes with 'black'
 
 ruff-apply: # Resolve 'fixable errors' with 'ruff'
 	uv run ruff check --fix .
+
+####################################
+# Docker
+####################################
+build: # Build local image for testing
+	docker build -t marimo-launcher:latest .
+
+shell: # Shell into local container for testing
+	docker run -it --entrypoint='bash' marimo-launcher:latest

@@ -4,7 +4,7 @@ from time import perf_counter
 
 import click
 
-from my_app.config import configure_logger, configure_sentry
+from launcher.config import configure_logger, configure_sentry
 
 logger = logging.getLogger(__name__)
 
@@ -26,3 +26,8 @@ def main(*, verbose: bool) -> None:
     logger.info(
         "Total time to complete process: %s", str(timedelta(seconds=elapsed_time))
     )
+
+
+if __name__ == "__main__":
+    logger = logging.getLogger("launcher.cli")
+    main()
