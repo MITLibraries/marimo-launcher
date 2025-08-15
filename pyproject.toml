@@ -4,7 +4,7 @@
 
 [project]
 name = "marimo-launcher"
-version = "2.0.0"
+version = "1.0.0"
 requires-python = ">=3.13"
 
 dependencies = [
@@ -47,20 +47,27 @@ show-fixes = true
 [tool.ruff.lint]
 select = ["ALL", "PT"]
 ignore = [
-    "COM812",
-    "D107", 
-    "N812", 
-    "PTH", 
     "C90",
+    "COM812",
     "D100",
-    "D101", 
+    "D101",
     "D102",
     "D103",
-    "D104", 
+    "D104",
+    "D107",
+    "D417",
+    "EM101",
+    "EM102",
+    "FIX002",
+    "G004",
+    "N812",
     "PLR0912",
-    "PLR0913", 
+    "PLR0913",
     "PLR0915",
+    "PTH",
     "S321",
+    "TD003",
+    "TRY003"
 ]
 
 # allow autofix behavior for specified rules
@@ -76,8 +83,11 @@ fixture-parentheses = false
 "tests/**/*" = [
     "ANN",
     "ARG001",
+    "PLR2004",
     "S101",
 ]
+"tests/fixtures/**" = ["ALL"]
+"tests/fixtures/*" = ["ALL"]
 
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 90

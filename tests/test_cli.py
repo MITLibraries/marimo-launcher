@@ -1,17 +1,6 @@
-from launcher.cli import main
+from launcher.cli import cli
 
 
-def test_cli_no_options(caplog, runner):
-    result = runner.invoke(main)
-    assert result.exit_code == 0
-    assert "Logger 'root' configured with level=INFO" in caplog.text
-    assert "Running process" in caplog.text
-    assert "Total time to complete process" in caplog.text
-
-
-def test_cli_all_options(caplog, runner):
-    result = runner.invoke(main, ["--verbose"])
-    assert result.exit_code == 0
-    assert "Logger 'root' configured with level=DEBUG" in caplog.text
-    assert "Running process" in caplog.text
-    assert "Total time to complete process" in caplog.text
+def test_cli_no_commands(caplog, runner):
+    result = runner.invoke(cli, [])
+    assert result.exit_code == 2
