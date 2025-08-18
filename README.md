@@ -9,11 +9,81 @@
 - To lint the repo: `make lint`
 - To run the app: `uv run launcher --help`
 
+## Overview
+
+This CLI is an application to launch _other_ Marimo notebooks.  There are two ways in which this CLI can launch a notebook:
+
+1. The notebook is available on the same machine as the CLI, e.g. mounted into the Docker container
+2. A Github repository is passed and cloned by the CLI that contains a notebook
+
+Because this CLI is meant to launch notebooks, it does not have a dedicated ECS task or service.
+
+Take a fictional example of a notebook called "Analyze All the Things (AATT)" in the repository `marimo-aatt`.  To provide this notebook for use, an ECS task would be created that sets two important environment variables:
+
+  - `NOTEBOOK_REPOSITORY=https://github.com/MITLibraries/marimo-aatt`
+  - `NOTEBOOK_PATH=aatt.py` (a non-default notebook path)
+
+The ECS task / service would invoke this `marimo-launcher` CLI, and this CLI would perform the following:
+
+1. Clone the Github repository into the container
+2. Install dependencies
+3. Launch the notebook `aatt.py`
+
+More information about structuring notebooks and dependencies below in "Preparing Notebooks". 
+
 ## Preparing Notebooks
 
-_TODO: Explain how this launcher will find a root + file, and the default `notebook.py` convention._
+### Notebook Location
+This CLI expects two primary things to discover the notebook to launch:
 
-_TODO: Explain how dependencies can be [inlined](https://docs.marimo.io/guides/package_management/inlining_dependencies/) or an external file and [`uv`'s `--with-requirements` flag](https://docs.astral.sh/uv/reference/cli/#uv-run--with-requirements) is used.  Could be helpful to link to [`uv export`](https://docs.astral.sh/uv/reference/cli/#uv-export) as a good way to take a `uv` project and produce a single `requirements.txt` file._ 
+1. The root directory of the notebook project (either mounted or a cloned Github repository)
+2. Path to the actual notebook python file to run
+
+The root of the notebook directory is set either by CLI arg `--repo` / env var `NOTEBOOK_REPOSITORY` or CLI arg `--mount` / env var `NOTEBOOK_MOUNT` (less common, more for dev work).  In either approach, a notebook directory is established and all other filepaths -- e.g. notebook or requirements -- are **relative** to this path.
+
+The default notebook path is `notebook.py` and is expected in the root of the cloned or mounted notebook repository.  The CLI arg `--path` or env var `NOTEBOOK_PATH` can be passed to override this.  
+
+### Notebook Dependencies
+
+There are two primary ways to handle dependencies for a notebook launched by this CLI:
+
+1. Inline dependencies
+2. External dependencies requirement file
+
+#### 1- Inline dependencies
+
+This is the **default** behavior for this CLI.
+
+Python [PEP 723](https://peps.python.org/pep-0723/) introduced inline dependencies for a python file.  Marimo [fully supports this](https://docs.marimo.io/guides/package_management/inlining_dependencies/) for notebooks as well.
+
+Inline dependencies are a text block at the top of the python notebook that outline what dependencies should be installed.  This section looks and feels much like sections in the `pyproject.toml`.  Here is a minimal example from `tests/fixtures/inline_deps/notebook.py`:
+
+```python
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "marimo",
+#     "tinydb==4.8.2",
+# ]
+# ///
+
+# rest of notebook here...
+```
+
+When the CLI launches this notebook it will include the flag `--sandbox` when running Marimo that instructs Marimo to use the inlined dependencies.
+
+The `Makefile` command `cli-test-inline-run` will demonstrate this.
+
+#### 2- External dependencies requirement file
+
+Another option, which requires the CLI flag `--requirements` or env var `NOTEBOOK_REQUIREMENTS`, is to install dependencies found in a standalone requirements file, e.g. `requirements.txt`.  The tests fixture `tests/fixtures/static_deps_reqs_txt/requirements.txt` shows an example of this kind of file.
+
+The flag `--requirements` or env var `NOTEBOOK_REQUIREMENTS` should point to a relative path from the root of the notebook directory where this file can be found.  When passed, Marimo will be launched with the flag `--with-requirements` which instructs it to created an isolated environment with these dependencies.
+
+There are many ways to create this file, [`uv export` is worth consideration](https://docs.astral.sh/uv/reference/cli/#uv-export).
+
+The `Makefile` command `cli-test-reqs-txt-run` will demonstrate this.
+
 
 ## Environment Variables
 
