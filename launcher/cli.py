@@ -43,6 +43,14 @@ def cli(
     help="git repository URL containing the notebook (env: NOTEBOOK_REPOSITORY)",
 )
 @click.option(
+    "--repo-branch",
+    envvar="NOTEBOOK_REPOSITORY_BRANCH",
+    help=(
+        "optional branch to checkout from cloned notebook repository "
+        "(env: NOTEBOOK_REPOSITORY_BRANCH)"
+    ),
+)
+@click.option(
     "--path",
     "notebook_path",
     envvar="NOTEBOOK_PATH",
@@ -95,6 +103,7 @@ def run(
     *,
     mount: Path | None,
     repo: str | None,
+    repo_branch: str | None,
     notebook_path: str,
     requirements_file: Path | None,
     mode: Literal["run", "edit"],
@@ -103,32 +112,34 @@ def run(
     token: str | None,
 ) -> None:
     """Launch notebook in 'run' or 'edit' mode."""
-    try:
-        dir_path = resolve_notebook_directory(str(mount) if mount else None, repo)
-        ensure_repo_cloned(dir_path, repo)
-        full_notebook_path = resolve_notebook_path(dir_path, notebook_path)
+    notebook_dir_path = resolve_notebook_directory(
+        mount=str(mount) if mount else None,
+        repo=repo,
+        repo_branch=repo_branch,
+    )
+    full_notebook_path = resolve_notebook_path(notebook_dir_path, notebook_path)
 
-        cmd = prepare_run_command(
-            mode=mode,
-            host=host,
-            port=port,
-            token=token,
-            notebook_path=notebook_path,
-            requirements_file=requirements_file,
-        )
+    cmd = prepare_run_command(
+        mode=mode,
+        host=host,
+        port=port,
+        token=token,
+        notebook_path=notebook_path,
+        requirements_file=requirements_file,
+    )
 
-        logger.info(f"launching notebook '{full_notebook_path}' with args {cmd}")
+    logger.info(f"launching notebook '{full_notebook_path}' with args {cmd}")
 
-        result = subprocess.run(cmd, cwd=str(dir_path), check=True)  # noqa: S603
+    result = subprocess.run(cmd, cwd=str(notebook_dir_path), check=True)  # noqa: S603
 
-        raise sys.exit(result.returncode)
-
-    except (ValueError, FileNotFoundError, RuntimeError) as exc:
-        click.echo(f"Error: {exc}", err=True)
-        sys.exit(2)
+    raise sys.exit(result.returncode)
 
 
-def resolve_notebook_directory(mount: str | None, repo: str | None) -> Path:
+def resolve_notebook_directory(
+    mount: str | None = None,
+    repo: str | None = None,
+    repo_branch: str | None = None,
+) -> Path:
     """Determine the root directory that will contain the notebook.
 
     Resolution rules:
@@ -142,38 +153,58 @@ def resolve_notebook_directory(mount: str | None, repo: str | None) -> Path:
     Args:
         - mount: Optional path to an existing host directory to use directly.
         - repo: Optional git repository URL to clone into a workspace.
+        - repo_branch: Optional git branch to checkout for notebook repository.
     """
     if mount:
-        p = Path(mount)
-        if not p.exists():
+        notebook_dir_path = Path(mount)
+        if not notebook_dir_path.exists():
             raise FileNotFoundError(f"NOTEBOOK_MOUNT path does not exist: {mount}")
-        return p
+        return notebook_dir_path
 
     if repo:
         workdir = Path("/tmp")  # noqa: S108
         workdir.mkdir(parents=True, exist_ok=True)
-        return workdir / f"notebook-clone-{uuid.uuid4()}"
+        notebook_dir_path = workdir / f"notebook-clone-{uuid.uuid4()}"
 
-    raise ValueError("either NOTEBOOK_MOUNT or NOTEBOOK_REPOSITORY must be provided")
+        clone_notebook_repository(notebook_dir_path, repo, repo_branch)
+
+        return notebook_dir_path
+
+    raise ValueError(
+        "either --mount/NOTEBOOK_MOUNT or --repo/NOTEBOOK_REPOSITORY must be provided"
+    )
 
 
-def ensure_repo_cloned(notebook_dir: Path, repo: str | None) -> None:
-    """Clone a repository and set as the notebook directory.
+def clone_notebook_repository(
+    notebook_dir: Path,
+    repo: str,
+    repo_branch: str | None = None,
+) -> None:
+    """Clone a notebook repository to a target directory.
 
     Behavior:
-    - If repo is provided AND the target directory does not exist, run:
-      git clone <repo> <notebook_dir>
+    - If the target directory does not already exist, clone the repository.
     - If the directory already exists or repo is None, do nothing.
 
     Args:
         - notebook_dir: Destination directory for the repository checkout.
         - repo: Git repository URL to clone (e.g., https://..., or SSH URL).
+        - repo_branch: Optional, git branch to checkout during clone
     """
-    if repo and not notebook_dir.exists():
-        result = subprocess.run(  # noqa: S603
-            ["git", "clone", repo, str(notebook_dir)],  # noqa: S607
-            check=True,
-        )
+    if not notebook_dir.exists():
+        cmd = [
+            "git",
+            "clone",
+        ]
+
+        if repo_branch:
+            cmd += ["--branch", repo_branch]
+
+        cmd += [repo, str(notebook_dir)]
+        logger.info(f"Cloning repository with args: {cmd}")
+
+        result = subprocess.run(cmd, check=True)  # noqa: S603
+
         if result.returncode != 0:
             raise RuntimeError(f"git clone failed with code {result.returncode}")
 

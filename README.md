@@ -100,6 +100,7 @@ Set these if you want to override defaults or pass values via env instead of fla
 
 ```shell
 NOTEBOOK_REPOSITORY= ### repository to clone that contains a notebook and any required assets
+NOTEBOOK_REPOSITORY_BRANCH= ### optional branch to checkout on clone
 NOTEBOOK_MOUNT= ### either local of Docker context, an accessible root directory that contains notebook(s)
 NOTEBOOK_PATH=### Relative path of actual notebook .py file based on cloned repository or mounted directory; defaults to "notebook.py"
 NOTEBOOK_REQUIREMENTS= ### filepath to install dependencies from, relative to notebook root; if unset assuming dependencies are inline in notebook
@@ -140,6 +141,8 @@ Options:
                        NOTEBOOK_MOUNT)
   --repo TEXT          git repository URL containing the notebook (env:
                        NOTEBOOK_REPOSITORY)
+  --repo-branch TEXT   optional branch to checkout from cloned notebook
+                       repository (env: NOTEBOOK_REPOSITORY_BRANCH)
   --path TEXT          relative path to the notebook within the directory
                        (env: NOTEBOOK_PATH)
   --requirements PATH  path to requirements file for environment (env:
