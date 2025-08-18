@@ -144,7 +144,7 @@ Options:
                        (env: NOTEBOOK_PATH)
   --requirements PATH  path to requirements file for environment (env:
                        NOTEBOOK_REQUIREMENTS)
-  --mode TEXT          launch mode, 'run' or 'edit' (env: NOTEBOOK_MODE)
+  --mode [run|edit]    launch mode, 'run' or 'edit' (env: NOTEBOOK_MODE)
                        [default: run]
   --host TEXT          host interface to bind (env: NOTEBOOK_HOST)  [default:
                        0.0.0.0]

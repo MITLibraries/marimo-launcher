@@ -3,6 +3,7 @@ import subprocess
 import sys
 import uuid
 from pathlib import Path
+from typing import Literal
 
 import click
 
@@ -60,6 +61,7 @@ def cli(
     envvar="NOTEBOOK_MODE",
     default="run",
     show_default=True,
+    type=click.Choice(["run", "edit"]),
     help="launch mode, 'run' or 'edit' (env: NOTEBOOK_MODE)",
 )
 @click.option(
@@ -95,7 +97,7 @@ def run(
     repo: str | None,
     notebook_path: str,
     requirements_file: Path | None,
-    mode: str,
+    mode: Literal["run", "edit"],
     host: str,
     port: int,
     token: str | None,
