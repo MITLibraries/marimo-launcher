@@ -227,6 +227,7 @@ def prepare_run_command(
     cmd += [
         "marimo",
         mode,
+        "--headless",
         "--host",
         host,
         "--port",
