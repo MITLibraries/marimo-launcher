@@ -136,21 +136,22 @@ Usage: python -m launcher.cli run [OPTIONS]
   Launch notebook in 'run' or 'edit' mode.
 
 Options:
-  --mount PATH          path to mounted / existing notebook directory (env:
-                        NOTEBOOK_MOUNT)
-  --repo TEXT           git repository URL containing the notebook (env:
-                        NOTEBOOK_REPOSITORY)
-  --path TEXT           relative path to the notebook within the directory
-                        (env: NOTEBOOK_PATH)
-  --requirements PATH   path to requirements file for environment (env:
-                        NOTEBOOK_REQUIREMENTS)
-  --mode TEXT           launch mode, 'run' or 'edit' (env: NOTEBOOK_MODE)
-                        [default: run]
-  --host TEXT           host interface to bind (env: NOTEBOOK_HOST)  [default:
-                        0.0.0.0]
-  --port INTEGER        port to bind (env: NOTEBOOK_PORT)  [default: 2718]
-  --no-token / --token  run marimo without auth token  [default: no-token]
-  --help                Show this message and exit.
+  --mount PATH         path to mounted / existing notebook directory (env:
+                       NOTEBOOK_MOUNT)
+  --repo TEXT          git repository URL containing the notebook (env:
+                       NOTEBOOK_REPOSITORY)
+  --path TEXT          relative path to the notebook within the directory
+                       (env: NOTEBOOK_PATH)
+  --requirements PATH  path to requirements file for environment (env:
+                       NOTEBOOK_REQUIREMENTS)
+  --mode TEXT          launch mode, 'run' or 'edit' (env: NOTEBOOK_MODE)
+                       [default: run]
+  --host TEXT          host interface to bind (env: NOTEBOOK_HOST)  [default:
+                       0.0.0.0]
+  --port INTEGER       port to bind (env: NOTEBOOK_PORT)  [default: 2718]
+  --token TEXT         set a required authentication token/password for the
+                       notebook; if not set, no token/password is required
+  --help               Show this message and exit.
 ```
 
 

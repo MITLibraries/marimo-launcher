@@ -85,6 +85,12 @@ cli-test-reqs-txt-run:
     --mount=tests/fixtures/static_deps_reqs_txt \
     --requirements=requirements.txt
 
+cli-test-token-authenticated:
+	uv run python -m launcher.cli \
+    run \
+    --mount=tests/fixtures/inline_deps \
+    --token="iamsecret"
+
 ####################################
 # Docker
 ####################################

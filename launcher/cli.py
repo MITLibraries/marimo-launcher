@@ -78,10 +78,14 @@ def cli(
     help="port to bind (env: NOTEBOOK_PORT)",
 )
 @click.option(
-    "--no-token/--token",
-    default=True,
+    "--token",
+    envvar="NOTEBOOK_TOKEN",
+    default=None,
     show_default=True,
-    help="run marimo without auth token",
+    help=(
+        "set a required authentication token/password for the notebook; "
+        "if not set, no token/password is required"
+    ),
 )
 @click.pass_context
 def run(
@@ -94,7 +98,7 @@ def run(
     mode: str,
     host: str,
     port: int,
-    no_token: bool,
+    token: str | None,
 ) -> None:
     """Launch notebook in 'run' or 'edit' mode."""
     try:
@@ -106,7 +110,7 @@ def run(
             mode=mode,
             host=host,
             port=port,
-            no_token=no_token,
+            token=token,
             notebook_path=notebook_path,
             requirements_file=requirements_file,
         )
@@ -190,7 +194,7 @@ def prepare_run_command(
     mode: str,
     host: str,
     port: int,
-    no_token: bool,
+    token: str | None,
     notebook_path: str,
     requirements_file: Path | None,
 ) -> list[str]:
@@ -212,7 +216,7 @@ def prepare_run_command(
         - mode: marimo subcommand to run (e.g., "run", "edit").
         - host: interface to bind the marimo server to (e.g., "127.0.0.1", "0.0.0.0").
         - port: TCP port for the marimo server.
-        - no_token: when True, add `--no-token` to disable auth.
+        - token: if not None, set as token for notebook, else launch with --no-token
         - notebook_path: path to the marimo notebook file.
         - requirements_file: optional path to a requirements file for `uv` (enables
             `--with-requirements`).
@@ -238,8 +242,10 @@ def prepare_run_command(
     if not requirements_file:
         cmd += ["--sandbox"]
 
-    # optionally disable auth token
-    if no_token:
+    # set token if passed
+    if token:
+        cmd += ["--token", "--token-password", token]
+    else:
         cmd += ["--no-token"]
 
     # path to the notebook is the final positional argument
