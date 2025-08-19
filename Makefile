@@ -70,15 +70,48 @@ black-apply: # Apply changes with 'black'
 ruff-apply: # Resolve 'fixable errors' with 'ruff'
 	uv run ruff check --fix .
 
+
+####################################
+# CLI
+####################################
+cli-test-inline-run:
+	uv run python -m launcher.cli \
+    run \
+    --mount=tests/fixtures/inline_deps
+
+cli-test-reqs-txt-run:
+	uv run python -m launcher.cli \
+    run \
+    --mount=tests/fixtures/static_deps_reqs_txt \
+    --requirements=requirements.txt
+
+cli-test-token-authenticated:
+	uv run python -m launcher.cli \
+    run \
+    --mount=tests/fixtures/inline_deps \
+    --token="iamsecret"
+
 ####################################
 # Docker
 ####################################
-build: # Build local image for testing
+docker-build: # Build local image for testing
 	docker build -t marimo-launcher:latest .
 
-shell: # Shell into local container for testing
+docker-shell: # Shell into local container for testing
 	docker run -it --entrypoint='bash' marimo-launcher:latest
 
+docker-test-run: # Test local docker container with test fixture notebook
+	docker run \
+	-p "2718:2718" \
+	-v "$(CURDIR)/tests/fixtures:/tmp/fixtures" \
+	-e NOTEBOOK_MOUNT="/tmp/fixtures" \
+	-e NOTEBOOK_PATH="helloworld.py" \
+	marimo-launcher:latest \
+	run
+
+####################################
+# Terraform
+####################################
 
 ### Terraform-generated Developer Deploy Commands for Dev environment           ###
 dist-dev: ## Build docker container (intended for developer-based manual build)
