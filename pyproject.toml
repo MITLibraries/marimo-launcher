@@ -4,7 +4,7 @@
 
 [project]
 name = "marimo-launcher"
-version = "1.0.0"
+version = "1.1.0"
 requires-python = ">=3.13"
 
 dependencies = [
@@ -31,7 +31,7 @@ line-length = 90
 [tool.mypy]
 disallow_untyped_calls = true
 disallow_untyped_defs = true
-exclude = ["tests/"]
+exclude = ["tests/","build/"]
 
 [tool.pytest.ini_options]
 log_level = "INFO"
@@ -95,3 +95,11 @@ max-doc-length = 90
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[project.scripts]
+marimo-launcher = "launcher.cli:cli"
+mitlib-marimo-launcher = "launcher.cli:cli"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
