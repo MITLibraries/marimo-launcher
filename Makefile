@@ -75,18 +75,18 @@ ruff-apply: # Resolve 'fixable errors' with 'ruff'
 # CLI
 ####################################
 cli-test-inline-run:
-	uv run python -m launcher.cli \
+	uv run marimo-launcher \
     run \
     --mount=tests/fixtures/inline_deps
 
 cli-test-reqs-txt-run:
-	uv run python -m launcher.cli \
+	uv run marimo-launcher \
     run \
     --mount=tests/fixtures/static_deps_reqs_txt \
     --requirements=requirements.txt
 
 cli-test-token-authenticated:
-	uv run python -m launcher.cli \
+	uv run marimo-launcher \
     run \
     --mount=tests/fixtures/inline_deps \
     --token="iamsecret"
@@ -104,10 +104,8 @@ docker-test-run: # Test local docker container with test fixture notebook
 	docker run \
 	-p "2718:2718" \
 	-v "$(CURDIR)/tests/fixtures:/tmp/fixtures" \
-	-e NOTEBOOK_MOUNT="/tmp/fixtures" \
-	-e NOTEBOOK_PATH="helloworld.py" \
-	marimo-launcher:latest \
-	run
+	-e NOTEBOOK_MOUNT="/tmp/fixtures/inline_deps" \
+	marimo-launcher:latest
 
 ####################################
 # Terraform
