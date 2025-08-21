@@ -20,5 +20,5 @@ RUN uv pip install --system .
 
 EXPOSE 2718
 
-ENTRYPOINT ["marimo-launcher"]
+ENTRYPOINT ["marimo-launcher", "run"]
 CMD []

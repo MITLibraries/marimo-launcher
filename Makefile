@@ -105,8 +105,7 @@ docker-test-run: # Test local docker container with test fixture notebook
 	-p "2718:2718" \
 	-v "$(CURDIR)/tests/fixtures:/tmp/fixtures" \
 	-e NOTEBOOK_MOUNT="/tmp/fixtures/inline_deps" \
-	marimo-launcher:latest \
-	run
+	marimo-launcher:latest
 
 ####################################
 # Terraform
