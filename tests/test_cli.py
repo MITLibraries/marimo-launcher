@@ -135,6 +135,74 @@ def test_cli_subprocess_run_minimal_required_args_get_defaults_success(runner):
         "2718",
         "--sandbox",
         "--no-token",
+        "--base-url",
+        "/tests/fixtures/inline_deps/notebook.py",
+        "notebook.py",
+    ]
+
+
+def test_cli_subprocess_run_base_url_override(runner):
+    args = [
+        "run",
+        "--mount",
+        "tests/fixtures/inline_deps",
+        "--base-url",
+        "/my/super/path.py",
+    ]
+
+    with mock.patch("launcher.cli.subprocess.run") as mock_subprocess_run:
+        mock_subprocess_run.return_value = subprocess.CompletedProcess(
+            args=args, returncode=0
+        )
+        _result = runner.invoke(cli, args)
+
+    # assert subproces.run has correct working directory of notebook
+    assert mock_subprocess_run.call_args.kwargs.get("cwd") == "tests/fixtures/inline_deps"
+
+    # assert subprocess.run had defaults applied
+    assert mock_subprocess_run.call_args.args[0] == [
+        "uv",
+        "run",
+        "marimo",
+        "run",
+        "--headless",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "2718",
+        "--sandbox",
+        "--no-token",
+        "--base-url",
+        "/my/super/path.py",
+        "notebook.py",
+    ]
+
+
+def test_cli_subprocess_run_skip_base_url(runner):
+    args = ["run", "--mount", "tests/fixtures/inline_deps", "--skip-base-url"]
+
+    with mock.patch("launcher.cli.subprocess.run") as mock_subprocess_run:
+        mock_subprocess_run.return_value = subprocess.CompletedProcess(
+            args=args, returncode=0
+        )
+        _result = runner.invoke(cli, args)
+
+    # assert subproces.run has correct working directory of notebook
+    assert mock_subprocess_run.call_args.kwargs.get("cwd") == "tests/fixtures/inline_deps"
+
+    # assert subprocess.run had defaults applied
+    assert mock_subprocess_run.call_args.args[0] == [
+        "uv",
+        "run",
+        "marimo",
+        "run",
+        "--headless",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "2718",
+        "--sandbox",
+        "--no-token",
         "notebook.py",
     ]
 

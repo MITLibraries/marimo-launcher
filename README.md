@@ -153,6 +153,13 @@ Options:
   --port INTEGER       port to bind (env: NOTEBOOK_PORT)  [default: 2718]
   --token TEXT         set a required authentication token/password for the
                        notebook; if not set, no token/password is required
+                       (env: NOTEBOOK_TOKEN)
+  --base-url TEXT      explicit base URL prefix to pass through to marimo; by
+                       default it's constructed from repository + notebook
+                       path (env: NOTEBOOK_BASE_URL)
+  --skip-base-url      skip setting Marimo configuration --base-url when
+                       launching the notebook; can be set with (env:
+                       NOTEBOOK_SKIP_BASE_URL=1)
   --help               Show this message and exit.
 ```
 

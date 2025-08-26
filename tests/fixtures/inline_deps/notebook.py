@@ -2,7 +2,7 @@
 # requires-python = ">=3.13"
 # dependencies = [
 #     "marimo",
-#     "tinydb==4.8.2",
+#     "tinydb",
 # ]
 # ///
 
