@@ -103,18 +103,8 @@ def cli(
     default=None,
     show_default=True,
     help=(
-        "explicit base URL prefix to pass through to marimo; "
-        "by default it's constructed from repository + notebook path "
+        "explicit base URL prefix to pass through to marimo on notebook launch "
         "(env: NOTEBOOK_BASE_URL)"
-    ),
-)
-@click.option(
-    "--skip-base-url",
-    is_flag=True,
-    envvar="NOTEBOOK_SKIP_BASE_URL",
-    help=(
-        "skip setting Marimo configuration --base-url when launching the notebook; "
-        "can be set with (env: NOTEBOOK_SKIP_BASE_URL=1)"
     ),
 )
 @click.pass_context
@@ -131,7 +121,6 @@ def run(
     port: int,
     token: str | None,
     base_url: str | None,
-    skip_base_url: bool,
 ) -> None:
     """Launch notebook in 'run' or 'edit' mode."""
     notebook_dir_path = resolve_notebook_directory(
@@ -140,9 +129,6 @@ def run(
         repo_branch=repo_branch,
     )
     full_notebook_path = resolve_notebook_path(notebook_dir_path, notebook_path)
-
-    if base_url is None and not skip_base_url:
-        base_url = resolve_base_url(mount, repo, notebook_path)
 
     cmd = prepare_run_command(
         mode=mode,
@@ -246,36 +232,6 @@ def resolve_notebook_path(notebook_dir: Path, notebook_path: str) -> Path:
     if not full_path.exists():
         raise FileNotFoundError(f"notebook path not found: {full_path}")
     return full_path
-
-
-def resolve_base_url(
-    mount: Path | None,
-    repo: str | None,
-    notebook_path: str,
-) -> str:
-    """Construct a base URL for the notebook to listen on after launch.
-
-    This correlates to the --base-url flag when starting a Marimo notebook.  Because it's
-    likely the notebook will be launched inside an ECS container, and serve requests from
-    an Automatic Load Balancer (ALB), it's possible we may not have control over the URL
-    request that is made.  This allows launching the notebook at a URL path we know
-    requests will come in over.
-
-    The default behavior is to take the repository name + full notebook path.  For example
-    if `--repo=https://github.com/foo/my-repo` and `--path=super/duper/analyzer.py` is
-    passed, the final result will be `--base-url=my-repo/super/duper/analyzer.py`.
-    """
-    base_url = "/"
-
-    if mount:
-        base_url += str(mount).removeprefix("/")
-
-    if repo:
-        base_url += repo.split("/")[-1]
-
-    base_url += f"/{notebook_path}"
-
-    return base_url
 
 
 def prepare_run_command(
