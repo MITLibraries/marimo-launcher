@@ -118,21 +118,20 @@ NOTEBOOK_PORT= ### port to serve running notebook on
 Base command
 
 ```text
-Usage: launcher [OPTIONS] COMMAND [ARGS]...
+Usage: marimo-launcher [OPTIONS] COMMAND [ARGS]...
 
 Options:
   -v, --verbose  Pass to log at debug level instead of info
   --help         Show this message and exit.
 
 Commands:
-  run
-  validate
+  run  Launch notebook in 'run' or 'edit' mode.
 ```
 
 ### `launcher run`
 
 ```text
-Usage: python -m launcher.cli run [OPTIONS]
+Usage: marimo-launcher run [OPTIONS]
 
   Launch notebook in 'run' or 'edit' mode.
 
