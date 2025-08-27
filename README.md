@@ -118,7 +118,7 @@ NOTEBOOK_PORT= ### port to serve running notebook on
 Base command
 
 ```text
-Usage: marimo-launcher [OPTIONS] COMMAND [ARGS]...
+Usage: uv run marimo-launcher [OPTIONS] COMMAND [ARGS]...
 
 Options:
   -v, --verbose  Pass to log at debug level instead of info
@@ -131,7 +131,7 @@ Commands:
 ### `launcher run`
 
 ```text
-Usage: marimo-launcher run [OPTIONS]
+Usage: uv run marimo-launcher run [OPTIONS]
 
   Launch notebook in 'run' or 'edit' mode.
 
