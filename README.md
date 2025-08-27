@@ -118,21 +118,20 @@ NOTEBOOK_PORT= ### port to serve running notebook on
 Base command
 
 ```text
-Usage: launcher [OPTIONS] COMMAND [ARGS]...
+Usage: uv run marimo-launcher [OPTIONS] COMMAND [ARGS]...
 
 Options:
   -v, --verbose  Pass to log at debug level instead of info
   --help         Show this message and exit.
 
 Commands:
-  run
-  validate
+  run  Launch notebook in 'run' or 'edit' mode.
 ```
 
 ### `launcher run`
 
 ```text
-Usage: python -m launcher.cli run [OPTIONS]
+Usage: uv run marimo-launcher run [OPTIONS]
 
   Launch notebook in 'run' or 'edit' mode.
 
@@ -154,6 +153,9 @@ Options:
   --port INTEGER       port to bind (env: NOTEBOOK_PORT)  [default: 2718]
   --token TEXT         set a required authentication token/password for the
                        notebook; if not set, no token/password is required
+                       (env: NOTEBOOK_TOKEN)
+  --base-url TEXT      explicit base URL prefix to pass through to marimo on
+                       notebook launch (env: NOTEBOOK_BASE_URL)
   --help               Show this message and exit.
 ```
 

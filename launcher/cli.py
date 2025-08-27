@@ -94,7 +94,17 @@ def cli(
     show_default=True,
     help=(
         "set a required authentication token/password for the notebook; "
-        "if not set, no token/password is required"
+        "if not set, no token/password is required (env: NOTEBOOK_TOKEN)"
+    ),
+)
+@click.option(
+    "--base-url",
+    envvar="NOTEBOOK_BASE_URL",
+    default=None,
+    show_default=True,
+    help=(
+        "explicit base URL prefix to pass through to marimo on notebook launch "
+        "(env: NOTEBOOK_BASE_URL)"
     ),
 )
 @click.pass_context
@@ -110,6 +120,7 @@ def run(
     host: str,
     port: int,
     token: str | None,
+    base_url: str | None,
 ) -> None:
     """Launch notebook in 'run' or 'edit' mode."""
     notebook_dir_path = resolve_notebook_directory(
@@ -126,6 +137,7 @@ def run(
         token=token,
         notebook_path=notebook_path,
         requirements_file=requirements_file,
+        base_url=base_url,
     )
 
     logger.info(f"launching notebook '{full_notebook_path}' with args {cmd}")
@@ -230,6 +242,7 @@ def prepare_run_command(
     token: str | None,
     notebook_path: str,
     requirements_file: Path | None,
+    base_url: str | None = None,
 ) -> list[str]:
     """Build the shell command used to launch a marimo notebook via `uv run`.
 
@@ -253,6 +266,8 @@ def prepare_run_command(
         - notebook_path: path to the marimo notebook file.
         - requirements_file: optional path to a requirements file for `uv` (enables
             `--with-requirements`).
+        - base_url: base URL path launched notebook will listen on
+            e.g. host:port/<base_url>
     """
     # start with `uv run` so marimo executes in a managed Python environment
     cmd: list[str] = ["uv", "run"]
@@ -280,6 +295,10 @@ def prepare_run_command(
         cmd += ["--token", "--token-password", token]
     else:
         cmd += ["--no-token"]
+
+    # set base url flag if passed
+    if base_url:
+        cmd += ["--base-url", base_url]
 
     # path to the notebook is the final positional argument
     cmd += [str(notebook_path)]
