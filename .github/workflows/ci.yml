@@ -1,5 +1,8 @@
 name: CI
-on: push
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/**'
 jobs:
   test:
     # TODO: move this into a shared workflow, https://github.com/MITLibraries/.github/tree/main/.github/workflows
