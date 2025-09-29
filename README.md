@@ -34,6 +34,7 @@ More information about structuring notebooks and dependencies below in "Preparin
 ## Preparing Notebooks
 
 ### Notebook Location
+
 This CLI expects two primary things to discover the notebook to launch:
 
 1. The root directory of the notebook project (either mounted or a cloned Github repository)
@@ -84,14 +85,13 @@ There are many ways to create this file, [`uv export` is worth consideration](ht
 
 The `Makefile` command `cli-test-reqs-txt-run` will demonstrate this.
 
-
 ## Environment Variables
 
 ### Required
 
 ```shell
-SENTRY_DSN=### If set to a valid Sentry DSN, enables Sentry exception monitoring. This is not needed for local development.
-WORKSPACE=### Set to `dev` for local development, this will be set to `stage` and `prod` in those environments by Terraform.
+SENTRY_DSN= ### If set to a valid Sentry DSN, enables Sentry exception monitoring. This is not needed for local development.
+WORKSPACE= ### Set to `dev` for local development, this will be set to `stage` and `prod` in those environments by Terraform.
 ```
 
 ### Optional
@@ -102,14 +102,13 @@ Set these if you want to override defaults or pass values via env instead of fla
 NOTEBOOK_REPOSITORY= ### repository to clone that contains a notebook and any required assets
 NOTEBOOK_REPOSITORY_BRANCH= ### optional branch to checkout on clone
 NOTEBOOK_MOUNT= ### either local of Docker context, an accessible root directory that contains notebook(s)
-NOTEBOOK_PATH=### Relative path of actual notebook .py file based on cloned repository or mounted directory; defaults to "notebook.py"
+NOTEBOOK_PATH= ### Relative path of actual notebook .py file based on cloned repository or mounted directory; defaults to "notebook.py"
 NOTEBOOK_REQUIREMENTS= ### filepath to install dependencies from, relative to notebook root; if unset assuming dependencies are inline in notebook
 
 NOTEBOOK_MODE= ### how to launch marimo: "run" to execute, "edit" to open the editor; default "run"
 NOTEBOOK_HOST= ### host to bind running notebook to
 NOTEBOOK_PORT= ### port to serve running notebook on
 ```
-
 
 ## CLI Commands
 
@@ -159,6 +158,8 @@ Options:
   --help               Show this message and exit.
 ```
 
+## Building for AWS
 
+This application is designed to also run as a Fargate container in AWS. To build and deploy the container to AWS ECR in our Development Account, use the `make publish-dev` command (you must be authenticated to AWS on the CLI first). The infrastructure to run the container (e.g., an ECS Task Definition, Cluster, and Service) are already in place in AWS, so you can easily launch the service via the AWS Console or via the Lambda function trigger.
 
-
+The infrastructure can support a container built on either `amd64` or `arm64` CPU architecture. There should be a file named `.aws-architecture` at the root of this repository that contains the default architecture for any builds for AWS, either `linux/amd64` or `linux/arm64`. IF the file does not exist, the builds from either the `Makefile` command or the automated deployment with GitHub Actions will default to `amd64`.
