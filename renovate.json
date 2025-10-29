@@ -11,9 +11,10 @@
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": [
-      "* 4 * * 1"
+      "* 0-4 * * 1"
     ]
   },
+  "timezone": "America/New_York",
   "vulnerabilityAlerts": {
     "labels": [
       "security"
