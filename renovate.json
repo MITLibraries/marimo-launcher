@@ -9,7 +9,10 @@
     "pep621"
   ],
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": true,
+    "schedule": [
+      "at any time"
+    ]
   },
   "timezone": "America/New_York",
   "vulnerabilityAlerts": {
