@@ -15,7 +15,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "black>=25.1.0",
     "coveralls>=4.0.1",
     "ipython>=9.4.0",
     "mypy>=1.17.1",
@@ -24,9 +23,6 @@ dev = [
     "pytest>=8.4.1",
     "ruff>=0.12.8",
 ]
-
-[tool.black]
-line-length = 90
 
 [tool.mypy]
 disallow_untyped_calls = true
@@ -50,6 +46,7 @@ select = ["ALL", "PT"]
 ignore = [
     "C90",
     "COM812",
+    "CPY001",
     "D100",
     "D101",
     "D102",

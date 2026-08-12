@@ -157,5 +157,5 @@ output/
 .vscode/
 
 AGENTS.md
-
 .arch_tag
+.tool-versions

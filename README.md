@@ -7,6 +7,8 @@
 - To update dependencies: `make update`
 - To run unit tests: `make test`
 - To lint the repo: `make lint`
+- To auto-fix lint issues: `make lint-fix`
+- To check for security vulnerabilities: `make security`
 - To run the app: `uv run launcher --help`
 
 ## Overview
